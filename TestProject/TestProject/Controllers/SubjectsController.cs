@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using TestProject.Data;
+using System.ComponentModel.DataAnnotations;
 using TestProject.Models;
+using TestProject.Models.DTO;
+using TestProject.Services;
 
 namespace TestProject.Controllers;
 
@@ -11,25 +12,25 @@ namespace TestProject.Controllers;
 [Authorize]
 public class SubjectsController : ControllerBase
 {
-    private readonly DataContext _context;
+    private readonly SubjectService _subjectService;
 
-    public SubjectsController(DataContext context)
+    public SubjectsController(SubjectService subjectService)
     {
-        _context = context;
+        _subjectService = subjectService;
     }
 
     // GET: api/Subjects
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Subject>>> GetSubjects()
+    public async Task<ActionResult<List<GetSubjectDTO>>> GetSubjects([FromQuery][Required] int from, [FromQuery][Required] int count)
     {
-        return await _context.Subjects.ToListAsync();
+        return await _subjectService.Get(from, count);
     }
 
     // GET: api/Subjects/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<Subject>> GetSubject(int id)
+    public async Task<ActionResult<GetSubjectDTO>> GetSubject(int id)
     {
-        var subject = await _context.Subjects.FindAsync(id);
+        var subject = await _subjectService.GetById(id);
 
         if (subject == null)
         {
@@ -42,30 +43,9 @@ public class SubjectsController : ControllerBase
     // PUT: api/Subjects/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutSubject(int id, Subject subject)
+    public async Task<IActionResult> PutSubject(int id, UpdateSubjectDTO dto)
     {
-        if (id != subject.Id)
-        {
-            return BadRequest();
-        }
-
-        _context.Entry(subject).State = EntityState.Modified;
-
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!SubjectExists(id))
-            {
-                return NotFound();
-            }
-            else
-            {
-                throw;
-            }
-        }
+        await _subjectService.Update(id, dto);
 
         return NoContent();
     }
@@ -73,32 +53,21 @@ public class SubjectsController : ControllerBase
     // POST: api/Subjects
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
-    public async Task<ActionResult<Subject>> PostSubject(Subject subject)
+    [Authorize(Roles = UserRole.Teacher)]
+    public async Task<ActionResult<Subject>> PostSubject(CreateSubjectDTO dto)
     {
-        _context.Subjects.Add(subject);
-        await _context.SaveChangesAsync();
+        var subjectId = await _subjectService.Create(dto);
 
-        return CreatedAtAction("GetSubject", new { id = subject.Id }, subject);
+        return CreatedAtAction("GetSubject", new { id = subjectId }, dto);
     }
 
     // DELETE: api/Subjects/5
     [HttpDelete("{id}")]
+    [Authorize(Roles = UserRole.Teacher)]
     public async Task<IActionResult> DeleteSubject(int id)
     {
-        var subject = await _context.Subjects.FindAsync(id);
-        if (subject == null)
-        {
-            return NotFound();
-        }
-
-        _context.Subjects.Remove(subject);
-        await _context.SaveChangesAsync();
+        await _subjectService.Delete(id);
 
         return NoContent();
-    }
-
-    private bool SubjectExists(int id)
-    {
-        return _context.Subjects.Any(e => e.Id == id);
     }
 }

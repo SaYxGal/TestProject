@@ -66,6 +66,7 @@ builder.Services.AddIdentity<User, IdentityRole<int>>()
 
 builder.Services.AddTransient<UserService>();
 builder.Services.AddTransient<TokenService>();
+builder.Services.AddTransient<SubjectService>();
 
 // JWT
 var jwtSettings = new JwtSettings();
