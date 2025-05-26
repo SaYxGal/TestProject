@@ -3,7 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using TestProject.Models;
+using TestProject.Data;
 using TestProject.Models.JWT;
 
 namespace TestProject.Services;

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace TestProject.Models;
+namespace TestProject.Data;
 
 public class User : IdentityUser<int>
 {

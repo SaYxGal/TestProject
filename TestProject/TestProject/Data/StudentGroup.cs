@@ -1,6 +1,6 @@
-﻿namespace TestProject.Models;
+﻿namespace TestProject.Data;
 
-public class Subject
+public class StudentGroup
 {
     public int Id { get; set; }
 

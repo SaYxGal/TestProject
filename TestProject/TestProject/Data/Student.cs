@@ -1,4 +1,4 @@
-﻿namespace TestProject.Models;
+﻿namespace TestProject.Data;
 
 public class Student
 {

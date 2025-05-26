@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TestProject.Data;
-using TestProject.Models;
 using TestProject.Models.DTO;
 
 namespace TestProject.Services;
